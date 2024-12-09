@@ -37,20 +37,20 @@
 (load (expand-file-name "packages.el" user-emacs-directory))
 
 ;; 加載配置文件的路徑
-;; (add-to-list 'load-path (expand-file-name "core" user-emacs-directory))
-;; (add-to-list 'load-path (expand-file-name "modules" user-emacs-directory))
+(add-to-list 'load-path (expand-file-name "core" user-emacs-directory))
+(add-to-list 'load-path (expand-file-name "modules" user-emacs-directory))
 
-;; (defvar salt-cache-dir (expand-file-name ".cache" user-emacs-directory))
-;; (unless (file-directory-p salt-cache-dir)
-;;   (make-directory sale-cache-dir))
+(defvar salt-cache-dir (expand-file-name ".cache" user-emacs-directory))
+(unless (file-directory-p salt-cache-dir)
+  (make-directory sale-cache-dir))
 
 
-;; ;; 加載核心配置
-;; (require 'core-settings)
-;; (require 'core-ui)
-;; (require 'core-minikit)
-;; (require 'core-completion)
-;; (require 'core-editing)
+;; 加載核心配置
+(require 'core-settings)
+(require 'core-ui)
+(require 'core-minikit)
+(require 'core-completion)
+(require 'core-editing)
 
 ;; 加載功能模塊
 ;(require 'web-editing)
