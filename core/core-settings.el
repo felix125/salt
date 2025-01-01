@@ -66,8 +66,6 @@
 
   ;; y-or-n
   (defalias 'yes-or-no-p 'y-or-n-p)
-  ;; disable vc
-  (setq vc-handled-backends nil)
   ;; no tabs
   (setq indent-tabs-mode nil)
   ;; Set up the visible bell
@@ -77,6 +75,20 @@
     (emacs-lock-mode 'kill))
   )
 
+
+(use-package project
+  :config
+  (setq vc-handled-backends '(Git))
+  (setq project-list-file (expand-file-name "projects" salt-cache-dir))
+  :commands (projectile-add-known-project)
+  :init
+ (defun project-add-known-project ()
+   (interactive)
+   (let* ((dir (read-directory-name "Project root: "))
+         (pr (cons 'transient dir)))
+    (project-remember-project pr)
+    (message "Added %s to projects" dir)))
+)
 
 (provide 'core-settings)
 ;;; core-settings.el ends here
