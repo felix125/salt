@@ -41,9 +41,10 @@
     pangu-spacing
 
     ;; notes & productivity
+    consult-notes
     org
     org-contrib
-    deft
+    org-super-agenda
   ))
 
 
