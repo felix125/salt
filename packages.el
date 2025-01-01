@@ -12,7 +12,7 @@
     ;; doom-modeline
     modus-themes
     all-the-icons
-    
+    pangu-spacing
 
     ;; core-minikit, enhance minibuffer
     vertico
@@ -38,7 +38,6 @@
     ;; text-editing
     markdown-mode
     yaml
-    pangu-spacing
 
     ;; notes & productivity
     consult-notes
