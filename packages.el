@@ -8,8 +8,9 @@
     undo-fu
     undo-fu-session
     ;; core-ui
-    doom-themes
-    doom-modeline
+    ;;doom-themes
+    ;; doom-modeline
+    modus-themes
     all-the-icons
     
 
