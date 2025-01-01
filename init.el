@@ -1,3 +1,16 @@
+;; Optimize garbage collection
+(setq gc-cons-threshold (* 50 1000 1000))
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq gc-cons-threshold (* 2 1000 1000))))
+
+
+(setq default-input-method nil)
+
+(when (featurep 'native-compile)
+  (setq native-comp-async-report-warnings-errors nil
+        native-comp-deferred-compilation t))
+
 ;; Profile emacs startup
 (add-hook 'emacs-startup-hook
             (lambda ()
@@ -12,7 +25,7 @@
        (expand-file-name
         "straight/repos/straight.el/bootstrap.el"
         (or (bound-and-true-p straight-base-dir)
-            user-emacs-directory)))
+            user-emacs-directory)) )
       (bootstrap-version 7))
   (unless (file-exists-p bootstrap-file)
     (with-current-buffer
@@ -42,7 +55,7 @@
 
 (defvar salt-cache-dir (expand-file-name ".cache" user-emacs-directory))
 (unless (file-directory-p salt-cache-dir)
-  (make-directory sale-cache-dir))
+  (make-directory salt-cache-dir))
 
 
 ;; 加載核心配置
@@ -52,7 +65,9 @@
 (require 'core-completion)
 (require 'core-editing)
 
+
 ;; 加載功能模塊
 ;(require 'web-editing)
-;(require 'org)
+(require 'salt-org)
+
 
