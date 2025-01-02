@@ -14,7 +14,7 @@
 
 (use-package savehist
   :init
-  (setq savehist-file (expand-file-name "history" salt-local-dir))
+  (setq savehist-file (expand-file-name "history" salt-cache-dir))
   (savehist-mode)
   )
 

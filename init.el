@@ -58,13 +58,18 @@
 (unless (file-directory-p salt-local-dir)
   (make-directory salt-local-dir))
 
+;; local folder
+(defvar salt-cache-dir (expand-file-name ".cache" user-emacs-directory))
+(unless (file-directory-p salt-cache-dir)
+  (make-directory salt-cache-dir))
+
 ;; dict folder
 (defvar salt-dict-dir (expand-file-name "dict" salt-local-dir))
 (unless (file-exists-p salt-dict-dir)
   (make-directory salt-dict-dir t))
 
 ;; template folder
-(defvar salt-template-dir (expand-file-name "templates" user-emacs-directory))
+(defvar salt-template-dir (expand-file-name "templates" salt-local-dir))
 (unless (file-directory-p salt-template-dir)
   (make-directory salt-template-dir))
 

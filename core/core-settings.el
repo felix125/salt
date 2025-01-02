@@ -17,7 +17,7 @@
 
 (use-package saveplace
   :init
-  (setq save-place-file (expand-file-name "places" salt-local-dir))
+  (setq save-place-file (expand-file-name "places" salt-cache-dir))
   (setq save-place-limit 100)
   :config
   (save-place-mode 1))
@@ -27,7 +27,7 @@
   :init
   (setq recentf-max-saved-items 200
         recentf-max-menu-items 15
-        recentf-save-file (expand-file-name "recentf" salt-local-dir))
+        recentf-save-file (expand-file-name "recentf" salt-cache-dir))
   :config
   (recentf-mode 1))
 
@@ -40,9 +40,9 @@
 
 (use-package undo-fu-session
   :config
-  ;; 使用之前定義的 salt-local-dir
+  ;; 使用之前定義的 salt-cache-dir
   (setq undo-fu-session-directory
-        (expand-file-name "undo-fu-session" salt-local-dir))
+        (expand-file-name "undo-fu-session" salt-cache-dir))
 
   ;; 限制每個檔案的歷史大小
   (setq undo-fu-session-file-limit (* 1024 1024))
@@ -64,9 +64,9 @@
 (use-package emacs
   :config
   ;; bookmark
-  (setq bookmark-default-file (expand-file-name "bookmarks" salt-local-dir))
+  (setq bookmark-default-file (expand-file-name "bookmarks" salt-cache-dir))
   ;; custom.el
-  (setq custom-file (expand-file-name "custom.el" salt-local-dir))
+  (setq custom-file (expand-file-name "custom.el" salt-cache-dir))
   (when (file-exists-p custom-file)
     (load custom-file))
   ;; y-or-n
@@ -86,7 +86,7 @@
 (use-package project
   :config
   (setq vc-handled-backends '(Git))
-  (setq project-list-file (expand-file-name "projects" salt-local-dir))
+  (setq project-list-file (expand-file-name "projects" salt-cache-dir))
   :commands (projectile-add-known-project)
   :init
  (defun project-add-known-project ()
