@@ -58,6 +58,7 @@
 (unless (file-directory-p salt-local-dir)
   (make-directory salt-local-dir))
 
+;; dict folder
 (defvar salt-dict-dir (expand-file-name "dict" salt-local-dir))
 (unless (file-exists-p salt-dict-dir)
   (make-directory salt-dict-dir t))

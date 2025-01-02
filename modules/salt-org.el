@@ -1,43 +1,47 @@
 
 (use-package org
-  :ensure t
   :init
   (setq org-directory "~/Dropbox/org")  ;設置 org 文件的默認目錄
+  (load (expand-file-name "capture-templates.el" salt-template-dir))
   :config
-  ;基礎設置
+  ; enable tempo
+  (require 'org-tempo)
+  
   (setq org-startup-indented t)           ;自動縮進
   (setq org-startup-folded t)             ;默認折疊所有標題
   (setq org-hide-leading-stars t)         ;隱藏多餘的標題星號
+  ;; org-agenda-files
+  (with-eval-after-load 'org
+    (add-to-list 'org-agenda-files "~/Dropbox/notes/Orgzly")
+    (add-to-list 'org-agenda-files "~/Dropbox/notes/Orgzly/journal"))
+
   
   ;TODO 關鍵字設置
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "IN-PROGRESS(i!)" "|" "DONE(d!)" "CANCELLED(c@/!)")
+        '((sequence "TODO(t!)" "IN-PROGRESS(i!)" "|" "DONE(d!)" "CANCELLED(c@/!)")
           (sequence "HOLD(h@/!)" "REVIEW(v@)" "|" "CANCELLED(c@/!)")
-          (sequence "NOTE(n)" "IDEA(y)" "|" "USED(u)")))
+          (sequence "NOTE(n!)" "IDEA(y!)" "|" "USED(u)")))
 
   (setq org-refile-targets '((nil :maxlevel . 2)  ; 允許 refile 到當前檔案
                              ("~/Dropbox/notes/Orgzly/notes.org" :maxlevel . 2)))
 
-
-  (setq org-capture-templates
-        '(("w" "Web Note" entry
-           (file+headline "~/Dropbox/notes/capture/webnotes.org" "Web Notes")
-           "* %^{Title} %^g
-:PROPERTIES:
-:Created: %U
-:Source: %^{Source|網頁|PDF|影片|討論區}
-:URL: %^{URL}
-:END:
-
-%?
-
-%i")))
+  (setq org-capture-templates capture-templates)
 
   )
 
+(use-package org-journal
+  :after org
+  :config
+  (setq org-journal-dir "~/Dropbox/notes/Orgzly/journal"
+        org-journal-date-format "%A, %d %B %Y"
+        org-journal-file-format "%Y%m.org"  ; 改成年月格式
+	org-journal-file-type 'monthly
+        org-journal-date-prefix "* ")        ; 改用標題標記每天的內容
+  )
+
+
 (use-package org-super-agenda
   :after org-agenda
-  :config
   :commands org-super-agenda-mode
   :hook (org-agenda-mode . org-super-agenda-mode)
   :config
