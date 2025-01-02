@@ -53,9 +53,19 @@
 (add-to-list 'load-path (expand-file-name "core" user-emacs-directory))
 (add-to-list 'load-path (expand-file-name "modules" user-emacs-directory))
 
-(defvar salt-cache-dir (expand-file-name ".cache" user-emacs-directory))
-(unless (file-directory-p salt-cache-dir)
-  (make-directory salt-cache-dir))
+;; local folder
+(defvar salt-local-dir (expand-file-name ".local" user-emacs-directory))
+(unless (file-directory-p salt-local-dir)
+  (make-directory salt-local-dir))
+
+(defvar salt-dict-dir (expand-file-name "dict" salt-local-dir))
+(unless (file-exists-p salt-dict-dir)
+  (make-directory salt-dict-dir t))
+
+;; template folder
+(defvar salt-template-dir (expand-file-name "templates" user-emacs-directory))
+(unless (file-directory-p salt-template-dir)
+  (make-directory salt-template-dir))
 
 
 ;; 加載核心配置
@@ -69,5 +79,4 @@
 ;; 加載功能模塊
 ;(require 'web-editing)
 (require 'salt-org)
-
 

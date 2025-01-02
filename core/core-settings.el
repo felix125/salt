@@ -17,7 +17,7 @@
 
 (use-package saveplace
   :init
-  (setq save-place-file (expand-file-name "places" salt-cache-dir))
+  (setq save-place-file (expand-file-name "places" salt-local-dir))
   (setq save-place-limit 100)
   :config
   (save-place-mode 1))
@@ -27,11 +27,11 @@
   :init
   (setq recentf-max-saved-items 200
         recentf-max-menu-items 15
-        recentf-save-file (expand-file-name "recentf" salt-cache-dir))
+        recentf-save-file (expand-file-name "recentf" salt-local-dir))
   :config
   (recentf-mode 1))
 
-
+;; undo
 (use-package undo-fu
   :config
   (global-unset-key (kbd "C-z"))
@@ -40,9 +40,9 @@
 
 (use-package undo-fu-session
   :config
-  ;; 使用之前定義的 salt-cache-dir
+  ;; 使用之前定義的 salt-local-dir
   (setq undo-fu-session-directory
-        (expand-file-name "undo-fu-session" salt-cache-dir))
+        (expand-file-name "undo-fu-session" salt-local-dir))
 
   ;; 限制每個檔案的歷史大小
   (setq undo-fu-session-file-limit (* 1024 1024))
@@ -63,13 +63,20 @@
 ;; some settings
 (use-package emacs
   :config
-
+  ;; bookmark
+  (setq bookmark-default-file (expand-file-name "bookmarks" salt-local-dir))
+  ;; custom.el
+  (setq custom-file (expand-file-name "custom.el" salt-local-dir))
+  (when (file-exists-p custom-file)
+    (load custom-file))
   ;; y-or-n
   (defalias 'yes-or-no-p 'y-or-n-p)
   ;; no tabs
   (setq indent-tabs-mode nil)
   ;; Set up the visible bell
   (setq visible-bell t)
+
+
   ;; 防止 *scratch* 被刪除
   (with-current-buffer "*scratch*"
     (emacs-lock-mode 'kill))
@@ -79,7 +86,7 @@
 (use-package project
   :config
   (setq vc-handled-backends '(Git))
-  (setq project-list-file (expand-file-name "projects" salt-cache-dir))
+  (setq project-list-file (expand-file-name "projects" salt-local-dir))
   :commands (projectile-add-known-project)
   :init
  (defun project-add-known-project ()
