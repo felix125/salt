@@ -73,6 +73,9 @@
 (unless (file-directory-p salt-template-dir)
   (make-directory salt-template-dir))
 
+;; debug
+(setq debug-on-error t)
+
 
 ;; 加載核心配置
 (require 'core-settings)
