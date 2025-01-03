@@ -1,13 +1,12 @@
-;; Use doom-themes theme
-;; (use-package doom-themes
-;;   :defer nil
-;;   :config
-;;   (setq doom-themes-enable-bold t    ; If set to nil, all bold fonts are disabled
-;;         doom-themes-enable-italic t) ; If set to nil, all italic fonts are disabled
-;;   (load-theme 'doom-one t))
 
-;; (use-package doom-modeline
-;;   :hook (after-init . doom-modeline-mode))
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode)
+  :config
+  ;;
+  (electric-pair-mode 1)
+  ;; Show matching parentheses
+  (show-paren-mode 1)
+  )
 
 (use-package pangu-spacing
   :init

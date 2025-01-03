@@ -51,14 +51,6 @@
     (make-directory undo-fu-session-directory t))
   (global-undo-fu-session-mode))
 
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode)
-  :config
-  ;;
-  (electric-pair-mode 1)
-  ;; Show matching parentheses
-  (show-paren-mode 1)
-  )
 
 ;; some settings
 (use-package emacs
@@ -76,10 +68,12 @@
   ;; Set up the visible bell
   (setq visible-bell t)
 
-
   ;; 防止 *scratch* 被刪除
   (with-current-buffer "*scratch*"
     (emacs-lock-mode 'kill))
+  )
+
+(use-package helpful
   )
 
 
@@ -87,15 +81,15 @@
   :config
   (setq vc-handled-backends '(Git))
   (setq project-list-file (expand-file-name "projects" salt-cache-dir))
-  :commands (projectile-add-known-project)
+  :commands (project-add-known-project)
   :init
- (defun project-add-known-project ()
-   (interactive)
-   (let* ((dir (read-directory-name "Project root: "))
-         (pr (cons 'transient dir)))
-    (project-remember-project pr)
-    (message "Added %s to projects" dir)))
-)
+  (defun project-add-known-project ()
+    (interactive)
+    (let* ((dir (read-directory-name "Project root: "))
+           (pr (cons 'transient dir)))
+      (project-remember-project pr)
+      (message "Added %s to projects" dir)))
+  )
 
 (provide 'core-settings)
 ;;; core-settings.el ends here
