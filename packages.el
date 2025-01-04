@@ -7,11 +7,15 @@
     rainbow-delimiters
     undo-fu
     undo-fu-session
+    helpful
+
     ;; core-ui
     ;;doom-themes
     ;; doom-modeline
     modus-themes
     all-the-icons
+
+    ;; core-editing
     pangu-spacing
 
     ;; core-minikit, enhance minibuffer

@@ -8,14 +8,6 @@
   (show-paren-mode 1)
   )
 
-(use-package pangu-spacing
-  :init
-  (global-pangu-spacing-mode 1)
-  :config
-  (setq word-wrap t)
-  (setq word-wrap-by-category t)
-  (setq pangu-spacing-real-insert-separtor t))
-
 
 (use-package modus-themes
   :demand t
