@@ -85,14 +85,6 @@
       (myvi-remove-escape)
       (myvi-disable))))
 
-(defun myvi-mode-maybe ()
-  "Enable myvi-mode unless the buffer is in special-mode."
-  (unless (derived-mode-p 'special-mode)
-    (myvi-mode 1)))
-
-;;;###autoload
-(define-globalized-minor-mode global-myvi-mode myvi-mode myvi-mode-maybe
-  :group 'myvi)
 
 (add-hook 'minibuffer-setup-hook 'save-and-disable-myvi)
 (add-hook 'minibuffer-exit-hook 'restore-myvi)

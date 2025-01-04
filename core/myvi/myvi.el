@@ -3,7 +3,11 @@
 (require 'myvi-core)
 (require 'myvi-commands)
 
+(defgroup myvi nil
+  "A simple Vi-like editing mode."
+  :group 'editing)
 
+;; define keybinding
 (define-key myvi-map "a" #'myvi-key-a)
 (define-key myvi-map "b" #'myvi-key-b)
 (define-key myvi-map "c" #'myvi-key-c)
@@ -59,6 +63,34 @@
 (define-key myvi-map "Z" #'myvi-key-Z)
 
 (define-key myvi-map ":" #'myvi-key-colon)
+
+
+
+(defcustom myvi-mode-hooks
+  '(text-mode-hook
+    prog-mode-hook
+    conf-mode-hook
+    fundamental-mode-hook)
+  "Hooks where myvi-mode should be enabled."
+  :type '(repeat symbol)
+  :group 'myvi)
+
+;;;###autoload
+(defun myvi-setup ()
+  "Setup myvi mode hooks."
+  (interactive)
+  (dolist (hook myvi-mode-hooks)
+    (add-hook hook #'myvi-mode))
+  (message "Myvi mode hooks are set up"))
+
+;;;###autoload
+(defun myvi-teardown ()
+  "Remove myvi mode hooks."
+  (interactive)
+  (dolist (hook myvi-mode-hooks)
+    (remove-hook hook #'myvi-mode))
+  (message "Myvi mode hooks are removed"))
+
 
 (provide 'myvi)
 ;;; myvi.el ends here

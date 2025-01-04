@@ -2,7 +2,7 @@
 (use-package myvi
   :load-path "core/myvi"
   :straight nil
-  :hook (after-init . global-myvi-mode)
+  :hook (after-init . myvi-setup)
   )
 
 (use-package pangu-spacing
