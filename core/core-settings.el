@@ -66,7 +66,8 @@
   ;; no tabs
   (setq indent-tabs-mode nil)
   ;; Set up the visible bell
-  (setq visible-bell t)
+  (setq visible-bell nil)
+  (setq ring-bell-function 'ignore)
 
   ;; 防止 *scratch* 被刪除
   (with-current-buffer "*scratch*"
