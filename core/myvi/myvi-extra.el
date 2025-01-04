@@ -1,7 +1,7 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 
 
-(defun salt-quit-buffer (&optional force)
+(defun myvi-quit-buffer (&optional force)
   "Kill current buffer and switch to *scratch*.
 If FORCE is non-nil, abandon any modifications."
   (interactive)

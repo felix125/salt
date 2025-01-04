@@ -63,7 +63,7 @@
 (define-key myvi-map "Z" #'myvi-key-Z)
 
 (define-key myvi-map ":" #'myvi-key-colon)
-
+(define-key myvi-map "$" #'myvi-key-dollar-sign)
 
 
 (defcustom myvi-mode-hooks

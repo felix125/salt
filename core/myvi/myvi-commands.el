@@ -7,7 +7,8 @@
 (defun myvi-key-a ()
   "Move forward and disable myvi commands."
   (interactive)
-  (forward-char)
+  (unless (eolp)
+    (forward-char))
   (myvi-disable))
 
 ;; b: 向後移動一個單字
@@ -65,7 +66,7 @@
 ;;; 插入類 (Insert)
 ;; i: 插入模式
 (defun myvi-key-i ()
-  "Enter insert mode."
+  "Enter edit mode."
   (interactive)
   (myvi-disable))
 
@@ -207,12 +208,13 @@
   (message "Z fold/scroll command not implemented"))
 
 ;;; 插入類 (Insert)
-;; A: 在行首插入
+;; A: 在行尾插入
 (defun myvi-key-A ()
-  "Move to line beginning and enter insert mode."
+  "Move to the end of line and disable myvi commands."
   (interactive)
-  (move-beginning-of-line nil)
-  (message "Insert mode at line start"))
+  (end-of-line)
+  (myvi-disable))
+
 
 ;;; 光標移動類 (Movement)
 ;; B: 向後移動一個大寫單字
@@ -256,7 +258,7 @@
 (defun myvi-key-G ()
   "Go to last line of buffer."
   (interactive)
-  (end-of-buffer))
+  (goto-char (point-max)))
 
 ;;; 光標移動類 (Movement)
 ;; H: 移動到視窗頂部
@@ -308,11 +310,15 @@
   (isearch-repeat-backward))
 
 ;;; 插入類 (Insert)
-;; O: [TODO] 在上方插入新行
+;; O: 在上方插入新行
 (defun myvi-key-O ()
-  "Placeholder for insert line above."
+  "Open a new line above."
   (interactive)
-  (message "O insert line above not implemented"))
+  (forward-line -1)
+  (end-of-line)
+  (newline-and-indent)
+  (myvi-disable))
+
 
 ;;; 貼上類 (Paste)
 ;; P: 在游標前貼上
@@ -443,9 +449,12 @@
 
 ;; 美元符號
 (defun myvi-key-dollar-sign ()
-  "Placeholder for dollar sign key."
+  "Move to end of line."
   (interactive)
-  (message "Dollar sign key not implemented"))
+  (unless (eolp)
+    (progn (end-of-line)
+           (backward-char)
+           (message "End of line"))))
 
 ;; 百分號
 (defun myvi-key-percent-sign ()
@@ -538,13 +547,13 @@
       ("w" (if (cdr cmd-parts)
                (write-file (cadr cmd-parts))
              (save-buffer)))
-      ("q" (salt-quit-buffer))
-      ("q!" (salt-quit-buffer t))       ; Force quit.
+      ("q" (myvi-quit-buffer))
+      ("q!" (myvi-quit-buffer t))       ; Force quit.
       ("wq" (progn
               (if (buffer-file-name)
                   (save-buffer)
                 (call-interactively #'write-file))
-              (salt-quit-buffer)))
+              (myvi-quit-buffer)))
       (_ (message "Unknown command: %s" command)))))
 
 
