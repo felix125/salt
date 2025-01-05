@@ -47,7 +47,6 @@
     consult-notes
     org
     org-contrib
-    org-journal
     org-super-agenda
   ))
 
