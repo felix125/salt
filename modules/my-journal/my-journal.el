@@ -143,21 +143,39 @@ If not in calendar, open calendar for selection."
   (interactive)
   (if (eq major-mode 'calendar-mode)
       (let* ((date (calendar-cursor-to-date))
+             (calendar-window (get-buffer-window "*Calendar*"))
              (scratch-window (get-buffer-window "*scratch*"))
              (main-window (get-largest-window)))
+        ;; 先選擇適當的視窗
         (if scratch-window
             (select-window scratch-window)
-          (select-window main-window))  ; 如果找不到 scratch 視窗，就切到其他視窗
+          (select-window main-window))
+        ;; 打開日誌
         (my-journal-go-to-date
          (encode-time 0 0 0
                      (nth 1 date)  ; day
                      (nth 0 date)  ; month
                      (nth 2 date)  ; year
-                     )))
+                     ))
+        ;; 關閉 calendar 視窗
+        (when calendar-window
+          (delete-window calendar-window)))
     (calendar)))
 
-(with-eval-after-load 'calendar
-  (define-key calendar-mode-map (kbd "RET") #'my-journal-calendar-open-day))
+;;;###autoload
+(define-minor-mode my-journal-mode
+  "Minor mode for journal integration with calendar."
+  :init-value nil
+  :lighter nil
+  :keymap (let ((map (make-sparse-keymap)))
+           (define-key map (kbd "RET") #'my-journal-calendar-open-day)
+           map))
+
+;;;###autoload
+(define-globalized-minor-mode global-my-journal-mode my-journal-mode
+  (lambda () t)
+  :group 'org)
+
 
 
 (provide 'my-journal)
