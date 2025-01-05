@@ -1,16 +1,18 @@
+
 (use-package vertico
   :init
   (vertico-mode)
-
-  ;; Grow and shrink the Vertico minibuffer
-  ;; (setq vertico-resize t)
-
-  ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
   (setq vertico-cycle t)
   :config
   (keymap-set vertico-map "<backspace>" #'vertico-directory-delete-char)
-  ;;(keymap-set vertico-map "TAB" #'minibuffer-complete)
-  )
+  (dolist (map (list vertico-map
+                     minibuffer-local-map
+                     minibuffer-local-ns-map
+                     minibuffer-local-completion-map
+                     minibuffer-local-must-match-map))
+    (keymap-set map "<escape>" #'keyboard-escape-quit)))
+  ;;(keymap-set vertico-map "TAB" #'minibuffer-complete))
+
 
 (use-package savehist
   :init
