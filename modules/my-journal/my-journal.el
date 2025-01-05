@@ -163,20 +163,12 @@ If not in calendar, open calendar for selection."
     (calendar)))
 
 ;;;###autoload
-(define-minor-mode my-journal-mode
-  "Minor mode for journal integration with calendar."
-  :init-value nil
-  :lighter nil
-  :keymap (let ((map (make-sparse-keymap)))
-           (define-key map (kbd "RET") #'my-journal-calendar-open-day)
-           map))
+(defun my-journal-setup ()
+  "Setup journal integration with calendar."
+  (define-key calendar-mode-map (kbd "RET") #'my-journal-calendar-open-day))
 
 ;;;###autoload
-(define-globalized-minor-mode global-my-journal-mode my-journal-mode
-  (lambda () t)
-  :group 'org)
-
-
+(add-hook 'calendar-mode-hook #'my-journal-setup)
 
 (provide 'my-journal)
 ;;; my-journal.el ends here
