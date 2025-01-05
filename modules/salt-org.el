@@ -29,17 +29,6 @@
 
   )
 
-(use-package org-journal
-  :after org
-  :config
-  (setq org-journal-dir "~/Dropbox/notes/Orgzly/journal"
-        org-journal-date-format "%A, %d %B %Y"
-        org-journal-file-format "%Y%m.org"  ; 改成年月格式
-	org-journal-file-type 'monthly
-        org-journal-date-prefix "* ")        ; 改用標題標記每天的內容
-  )
-
-
 (use-package org-super-agenda
   :after org-agenda
   :commands org-super-agenda-mode
@@ -70,6 +59,18 @@
   (setq consult-notes-file-dir-sources
         '(("Orgzly"   ?o "~/Dropbox/notes/Orgzly")
           ("Personal" ?n "~/Dropbox/notes"))))
+
+(use-package my-journal
+  :load-path "modules/my-journal"
+  :straight nil
+  :demand t
+  :custom
+  (my-journal-directory "~/Dropbox/notes/Orgzly/journal")
+  (my-journal-date-format "* %A, %d %B")
+  (my-journal-time-format "%H%M")
+  (my-journal-file-format "%Y-%m.org")
+  (my-journal-title-format "#+TITLE: Journal %Y-%m")
+  )
 
 
 
