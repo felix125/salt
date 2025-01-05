@@ -5,21 +5,17 @@
 ;; deal with backup files
 (use-package super-save
   :diminish  ; Do not show on modeline
-  :config
+  :init
   ;; Disable backup files
   (setq make-backup-files nil)
-  ;; Disable Auto Save
-  (setq auto-save-default nil)
   (setq super-save-auto-save-when-idle t)
   (setq super-save-idle-duration 5)
   (super-save-mode 1))
-
 
 (use-package saveplace
   :init
   (setq save-place-file (expand-file-name "places" salt-cache-dir))
   (setq save-place-limit 100)
-  :config
   (save-place-mode 1))
 
 ;; recentf
@@ -54,7 +50,7 @@
 
 ;; some settings
 (use-package emacs
-  :config
+  :init
   ;; bookmark
   (setq bookmark-default-file (expand-file-name "bookmarks" salt-cache-dir))
   ;; custom.el
@@ -68,13 +64,21 @@
   ;; Set up the visible bell
   (setq visible-bell nil)
   (setq ring-bell-function 'ignore)
-
+  ;; Disable Auto Save
+  (setq auto-save-default nil) 
   ;; 防止 *scratch* 被刪除
   (with-current-buffer "*scratch*"
     (emacs-lock-mode 'kill))
+  ;; 回到 scratch buffer
+  (defun home ()
+    "Go back to scratch buffer"
+    (interactive)
+    (switch-to-buffer "*scratch*")
+    )
   )
 
 (use-package helpful
+  :defer t
   )
 
 
