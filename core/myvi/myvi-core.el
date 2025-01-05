@@ -8,8 +8,8 @@
   "A variable to control the activation of myvi keymap.")
 (make-variable-buffer-local 'myvi-active-p)
 
-(defvar myvi-previous-state nil
-  "Variable to save the state of myvi before entering minibuffer.")
+;; (defvar myvi-previous-state nil
+;;   "Variable to save the state of myvi before entering minibuffer.")
 
 (defvar myvi-escape-bound nil
   "Buffer-local variable to track whether escape key is bound.")
@@ -54,14 +54,14 @@
         cursor-type 'bar)
   (message "myvi commands disabled"))
 
-(defun save-and-disable-myvi ()
-  "Save the previous state of myvi mode and disable it."
-  (setq myvi-previous-state myvi-active-p)
-  (setq myvi-active-p nil))
+;; (defun save-and-disable-myvi ()
+;;   "Save the previous state of myvi mode and disable it."
+;;   (setq myvi-previous-state myvi-active-p)
+;;   (setq myvi-active-p nil))
 
-(defun restore-myvi ()
-  "Restore the previous state of myvi mode."
-  (setq myvi-active-p myvi-previous-state))
+;; (defun restore-myvi ()
+;;   "Restore the previous state of myvi mode."
+;;   (setq myvi-active-p myvi-previous-state))
 
 
 ;; myvi-mode
@@ -72,8 +72,8 @@
   :lighter " Myvi"
   (if myvi-mode
       (progn
-        (setq myvi-active-p nil
-              myvi-previous-state nil)
+        (setq myvi-active-p nil)
+              ;;myvi-previous-state nil)
         (add-to-list 'emulation-mode-map-alists
                      `((myvi-active-p . ,myvi-map)))
         (myvi-setup-escape)
@@ -86,8 +86,8 @@
       (myvi-disable))))
 
 
-(add-hook 'minibuffer-setup-hook 'save-and-disable-myvi)
-(add-hook 'minibuffer-exit-hook 'restore-myvi)
+;(add-hook 'minibuffer-setup-hook 'save-and-disable-myvi)
+;(add-hook 'minibuffer-exit-hook 'restore-myvi)
 
 (provide 'myvi-core)
 ;;; myvi-core.el ends here
