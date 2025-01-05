@@ -61,16 +61,14 @@
           ("Personal" ?n "~/Dropbox/notes"))))
 
 (use-package my-journal
-  :load-path "modules/my-journal"
-  :straight nil
-  :demand t
+  :straight (my-journal :type nil :local-repo "/Users/felix/.emacs.d/salt/modules/my-journal")
   :custom
   (my-journal-directory "~/Dropbox/notes/Orgzly/journal")
   (my-journal-date-format "* %A, %d %B")
   (my-journal-time-format "%H%M")
   (my-journal-file-format "%Y-%m.org")
   (my-journal-title-format "#+TITLE: Journal %Y-%m")
-  )
+    )
 
 
 
