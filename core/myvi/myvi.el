@@ -77,19 +77,36 @@
 
 ;;;###autoload
 (defun myvi-setup ()
-  "Setup myvi mode hooks."
+  "Setup myvi mode advices."
   (interactive)
-  (dolist (hook myvi-mode-hooks)
-    (add-hook hook #'myvi-mode))
-  (message "Myvi mode hooks are set up"))
+  (dolist (mode '(text-mode prog-mode fundamental-mode))
+    (advice-add mode :after #'myvi-mode))
+  (message "Myvi mode advices are set up"))
 
 ;;;###autoload
 (defun myvi-teardown ()
-  "Remove myvi mode hooks."
+  "Remove myvi mode advices."
   (interactive)
-  (dolist (hook myvi-mode-hooks)
-    (remove-hook hook #'myvi-mode))
-  (message "Myvi mode hooks are removed"))
+  (dolist (mode '(text-mode prog-mode fundamental-mode))
+    (advice-remove mode #'myvi-mode))
+  (message "Myvi mode advices are removed"))
+
+
+;; ;;;###autoload
+;; (defun myvi-setup ()
+;;   "Setup myvi mode hooks."
+;;   (interactive)
+;;   (dolist (hook myvi-mode-hooks)
+;;     (add-hook hook #'myvi-mode))
+;;   (message "Myvi mode hooks are set up"))
+
+;; ;;;###autoload
+;; (defun myvi-teardown ()
+;;   "Remove myvi mode hooks."
+;;   (interactive)
+;;   (dolist (hook myvi-mode-hooks)
+;;     (remove-hook hook #'myvi-mode))
+;;   (message "Myvi mode hooks are removed"))
 
 
 (provide 'myvi)
