@@ -29,7 +29,7 @@
 (defun myvi-key-d ()
   "Delete line or region."
   (interactive)
-  (message "C change command not implemented"))
+  (message "D delete command not implemented"))
 
 ;;; 光標移動類 (Movement)
 ;; e: 移動到單字結尾
@@ -64,9 +64,10 @@
     (backward-char)))
 
 ;;; 插入類 (Insert)
-;; i: 插入模式
+;; i: 回到 emacs 的編輯模式
 (defun myvi-key-i ()
-  "Enter edit mode."
+  "Exit command mode.
+Unlike Vi’s insert mode, simply return to normal Emacs editing."
   (interactive)
   (myvi-disable))
 
@@ -165,10 +166,19 @@
 
 ;;; 復原類 (Undo)
 ;; u: 復原
+(defcustom myvi-warn-no-undo-fu t
+  "Whether to warn when undo-fu is not available."
+  :type 'boolean
+  :group 'myvi)
+
 (defun myvi-key-u ()
   "Undo last action."
   (interactive)
-  (undo-fu-only-undo))
+  (if (fboundp 'undo-fu-only-undo)
+      (undo-fu-only-undo)
+    (when myvi-warn-no-undo-fu
+      (message "Consider installing undo-fu for better undo support"))
+    (undo)))
 
 ;;; 視覺選擇類 (Visual)
 ;; v: 進入視覺模式
@@ -268,11 +278,13 @@
   (move-to-window-line 0))
 
 ;;; 插入類 (Insert)
-;; I: [TODO] 在非空白處插入
+;; I: 移到行首並回到一般 emacs 的編輯模式
 (defun myvi-key-I ()
-  "Placeholder for insert at first non-blank."
+  "Move to begin of line and Exit command mode.
+Unlike Vi’s insert mode, simply return to normal Emacs editing."
   (interactive)
-  (message "I insert at first non-blank not implemented"))
+  (beginning-of-line)
+  (myvi-disable))
 
 ;;; 光標移動類 (Movement)
 ;; J: 合併行
@@ -359,9 +371,11 @@
 ;;; 復原類 (Undo)
 ;; U: 復原整行
 (defun myvi-key-U ()
-  "Undo entire line."
+  "Redo last action."
   (interactive)
-  (undo))
+  (if (fboundp 'undo-fu-only-redo)
+      (undo-fu-only-redo)
+    (user-error "Redo not available. Consider installing undo-fu")))
 
 ;;; 視覺選擇類 (Visual)
 ;; V: [TODO] 整行視覺選擇
