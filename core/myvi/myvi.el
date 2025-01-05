@@ -65,48 +65,24 @@
 (define-key myvi-map ":" #'myvi-key-colon)
 (define-key myvi-map "$" #'myvi-key-dollar-sign)
 
-
-(defcustom myvi-mode-hooks
-  '(text-mode-hook
-    prog-mode-hook
-    conf-mode-hook
-    fundamental-mode-hook)
-  "Hooks where myvi-mode should be enabled."
-  :type '(repeat symbol)
-  :group 'myvi)
-
 ;;;###autoload
 (defun myvi-setup ()
   "Setup myvi mode advices."
   (interactive)
-  (dolist (mode '(text-mode prog-mode fundamental-mode))
+  (dolist (mode '(text-mode conf-mode fundamental-mode))
     (advice-add mode :after #'myvi-mode))
+  (add-hook 'prog-mode-hook #'myvi-mode)
   (message "Myvi mode advices are set up"))
 
 ;;;###autoload
 (defun myvi-teardown ()
   "Remove myvi mode advices."
   (interactive)
-  (dolist (mode '(text-mode prog-mode fundamental-mode))
-    (advice-remove mode #'myvi-mode))
+  (dolist (mode '(text-mode conf-mode fundamental-mode))
+    (when (advice-member-p #'myvi-mode mode)
+      (advice-remove mode #'myvi-mode)))
+  (remove-hook 'prog-mode-hook #'myvi-mode)
   (message "Myvi mode advices are removed"))
-
-
-;; ;;;###autoload
-;; (defun myvi-setup ()
-;;   "Setup myvi mode hooks."
-;;   (interactive)
-;;   (dolist (hook myvi-mode-hooks)
-;;     (add-hook hook #'myvi-mode))
-;;   (message "Myvi mode hooks are set up"))
-
-;; ;;;###autoload
-;; (defun myvi-teardown ()
-;;   "Remove myvi mode hooks."
-;;   (interactive)
-;;   (dolist (hook myvi-mode-hooks)
-;;     (remove-hook hook #'myvi-mode))
-;;   (message "Myvi mode hooks are removed"))
 
 
 (provide 'myvi)
