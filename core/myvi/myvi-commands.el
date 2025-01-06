@@ -2,6 +2,7 @@
 ;;; Code:
 (require 'myvi-core)
 (require 'myvi-extra)
+
 ;;; 光標移動類 (Movement)
 ;; a:
 (defun myvi-key-a ()
@@ -22,14 +23,15 @@
 (defun myvi-key-c ()
   "Placeholder for change/edit command."
   (interactive)
-  (message "C change command not implemented"))
+  (myvi-handle-command ?c)
+  (myvi-disable))
 
 ;;; 刪除類 (Delete)
 ;; d: [TODO] 刪除行或選取區域
 (defun myvi-key-d ()
-  "Delete line or region."
+  "Start a delete command sequence"
   (interactive)
-  (message "D delete command not implemented"))
+  (myvi-handle-command ?d))
 
 ;;; 光標移動類 (Movement)
 ;; e: 移動到單字結尾
@@ -206,9 +208,7 @@ Unlike Vi’s insert mode, simply return to normal Emacs editing."
 (defun myvi-key-y ()
   "Copy line or region."
   (interactive)
-  (if (use-region-p)
-      (copy-region-as-kill (region-beginning) (region-end))
-    (kill-ring-save (line-beginning-position) (line-end-position))))
+  (message "hello"))
 
 ;;; 摺疊/捲動類 (Fold/Scroll)
 ;; z: [TODO] 摺疊或捲動

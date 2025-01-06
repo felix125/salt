@@ -1,8 +1,9 @@
 
 (use-package myvi
-  :load-path "core/myvi"
-  :straight nil
-  :hook (after-init . myvi-setup)
+  ;:load-path "core/myvi"
+  :straight (myvi :type nil :local-repo "/Users/felix/.emacs.d/salt/core/myvi")
+  :init
+  (myvi-setup)
   )
 
 (use-package pangu-spacing
