@@ -19,7 +19,7 @@
   (backward-word))
 
 ;;; 變更/修改類 (Change/Edit)
-;; c: [TODO] 尚未實現的變更命令
+;; c: 變更
 (defun myvi-key-c ()
   "Placeholder for change/edit command."
   (interactive)
@@ -27,11 +27,13 @@
   (myvi-disable))
 
 ;;; 刪除類 (Delete)
-;; d: [TODO] 刪除行或選取區域
+;; d: 刪除
 (defun myvi-key-d ()
   "Start a delete command sequence"
   (interactive)
-  (myvi-handle-command ?d))
+  (setq cursor-type '(hbar . 5))
+  (myvi-handle-command ?d)
+  (setq cursor-type 'box))
 
 ;;; 光標移動類 (Movement)
 ;; e: 移動到單字結尾
@@ -208,7 +210,9 @@ Unlike Vi’s insert mode, simply return to normal Emacs editing."
 (defun myvi-key-y ()
   "Copy line or region."
   (interactive)
-  (message "hello"))
+  (setq cursor-type '(hbar . 5))
+  (myvi-handle-command ?y)
+  (setq cursor-type 'box))
 
 ;;; 摺疊/捲動類 (Fold/Scroll)
 ;; z: [TODO] 摺疊或捲動
@@ -420,15 +424,50 @@ Unlike Vi’s insert mode, simply return to normal Emacs editing."
   (move-beginning-of-line nil))
 
 ;; 1-9: [TODO] 可能用於行號或其他操作
-(defun myvi-key-one ()   "Placeholder for 1 key." (interactive) (message "One key not implemented"))
-(defun myvi-key-two ()   "Placeholder for 2 key." (interactive) (message "Two key not implemented"))
-(defun myvi-key-three () "Placeholder for 3 key." (interactive) (message "Three key not implemented"))
-(defun myvi-key-four ()  "Placeholder for 4 key." (interactive) (message "Four key not implemented"))
-(defun myvi-key-five ()  "Placeholder for 5 key." (interactive) (message "Five key not implemented"))
-(defun myvi-key-six ()   "Placeholder for 6 key." (interactive) (message "Six key not implemented"))
-(defun myvi-key-seven () "Placeholder for 7 key." (interactive) (message "Seven key not implemented"))
-(defun myvi-key-eight () "Placeholder for 8 key." (interactive) (message "Eight key not implemented"))
-(defun myvi-key-nine ()  "Placeholder for 9 key." (interactive) (message "Nine key not implemented"))
+(defun myvi-key-one ()
+  "Placeholder for 1 key."
+  (interactive)
+  (message "One key not implemented"))
+
+(defun myvi-key-two ()
+  "Placeholder for 2 key."
+  (interactive)
+  (message "Two key not implemented"))
+
+(defun myvi-key-three ()
+  "Placeholder for 3 key."
+  (interactive)
+  (message "Three key not implemented"))
+
+(defun myvi-key-four ()
+  "Placeholder for 4 key."
+  (interactive)
+  (message "Four key not implemented"))
+
+(defun myvi-key-five ()
+  "Placeholder for 5 key."
+  (interactive)
+  (message "Five key not implemented"))
+
+(defun myvi-key-six ()
+  "Placeholder for 6 key."
+  (interactive)
+  (message "Six key not implemented"))
+
+(defun myvi-key-seven ()
+  "Placeholder for 7 key."
+  (interactive)
+  (message "Seven key not implemented"))
+
+(defun myvi-key-eight ()
+  "Placeholder for 8 key."
+  (interactive)
+  (message "Eight key not implemented"))
+
+(defun myvi-key-nine ()
+  "Placeholder for 9 key."
+  (interactive)
+  (message "Nine key not implemented"))
 
 ;;; 特殊字符類 (Special Characters)
 ;; 反引號

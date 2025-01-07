@@ -57,49 +57,74 @@ If FORCE is non-nil, abandon any modifications."
         (message "Unknown command")
       (cond
        ((char-equal cmd type) (myvi-delete-line num type))
-       ((char-equal cmd ?w) (myvi-delete-word num))
-       ((char-equal cmd ?b) (myvi-delete-backward-word num))
-       ((char-equal cmd ?e) (myvi-delete-to-word-end num))
-       ((char-equal cmd ?$) (myvi-delete-to-eol))
-       ((char-equal cmd ?0) (myvi-delete-to-bol))
+       ((char-equal cmd ?w) (myvi-delete-word num type))
+       ((char-equal cmd ?b) (myvi-delete-backward-word num type))
+       ((char-equal cmd ?$) (myvi-delete-to-eol type))
+       ((char-equal cmd ?0) (myvi-delete-to-bol type))
        (t (message "Unknown command"))))))
 
+;; yank
+(defun myvi-yank-region (orig beg end)
+  "Yank (copy) the region from BEG to END and restore cursor to ORIG."
+  (goto-char beg)
+  (push-mark end t t)
+  (sit-for 0.15) 
+  (kill-ring-save beg end)
+  (goto-char orig))        
 
+;; delete/yank N lines
 (defun myvi-delete-line (n type)
-  "Delete N lines. If TYPE is ?c, insert a new line."
-  (beginning-of-line)
-  (kill-line n)
-  (when (eq type ?c)
-    (open-line 1)))
+  "Delete/yank N lines based on TYPE."
+  (let ((orig (point))
+        (beg (progn (beginning-of-line) (point)))
+        (end (progn (forward-line n) (point))))
+    (if (eq type ?y)
+        (myvi-yank-region orig beg end)
+      (progn
+        (goto-char beg)
+        (kill-line n)
+        (when (eq type ?c)
+          (open-line 1))))))
 
-(defun myvi-delete-to-bol ()
-  "Delete to beginning of line."
-  (kill-region (line-beginning-position) (point)))
+;; delete/yank to beginning of line
+(defun myvi-delete-to-bol (type)
+  "Delete/yank to beginning of line based on TYPE."
+  (let ((beg (line-beginning-position))
+        (end (point)))
+    (if (eq type ?y)
+        (myvi-yank-region end beg end)
+      (kill-region beg end))))
 
-(defun myvi-delete-to-eol ()
-  "Delete to end of line."
-  (kill-region (point) (line-end-position)))
+;; delete/yank to end of line
+(defun myvi-delete-to-eol (type)
+  "Delete/yank to end of line based on TYPE."
+  (let ((beg (point))
+        (end (line-end-position)))
+    (if (eq type ?y)
+	(myvi-yank-region beg beg end)
+      (kill-region beg end))))
 
-(defun myvi-delete-word (n)
-  "Delete N words forward."
-  (kill-region (point)
-               (progn (forward-word (+ n 1))
-		      (backward-word)
-		      (point))))
+;; delete/yank N words backward
+(defun myvi-delete-backward-word (n type)
+  "Delete/yank N words backward based on TYPE."
+  (let ((end (point))
+	(beg (progn
+               (backward-word n)
+               (point))))
+    (if (eq type ?y)
+        (myvi-yank-region end beg end)
+      (kill-region beg end))))
 
-(defun myvi-delete-backward-word (n)
-  "Delete N words backward."
-  (kill-region (point)
-               (progn (backward-word n) (point))))
-
-(defun myvi-delete-to-word-end (n)
+;; delete/yank N words forward to their end
+(defun myvi-delete-word (n type)
   "Delete N words forward to their end."
-  (kill-region (point)
-               (progn 
-                 (forward-word n)
-                 (backward-word n)
-                 (forward-word n)
-                 (point))))
+  (let ((beg (point))
+        (end (progn
+               (forward-word n)
+               (point))))
+    (if (eq type ?y)
+          (myvi-yank-region beg beg end)
+      (kill-region beg end))))
 
 
 (provide 'myvi-extra)

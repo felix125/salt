@@ -62,6 +62,14 @@
 (define-key myvi-map "Y" #'myvi-key-Y)
 (define-key myvi-map "Z" #'myvi-key-Z)
 
+(define-key myvi-map "0" #'myvi-key-zero)
+(define-key myvi-map "1" #'myvi-key-one)
+(define-key myvi-map "2" #'myvi-key-two)
+(define-key myvi-map "3" #'myvi-key-three)
+(define-key myvi-map "4" #'myvi-key-four)
+
+
+
 (define-key myvi-map ":" #'myvi-key-colon)
 (define-key myvi-map "$" #'myvi-key-dollar-sign)
 
