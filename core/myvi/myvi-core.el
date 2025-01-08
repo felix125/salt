@@ -8,12 +8,25 @@
   "A variable to control the activation of myvi keymap.")
 (make-variable-buffer-local 'myvi-active-p)
 
-;; (defvar myvi-previous-state nil
-;;   "Variable to save the state of myvi before entering minibuffer.")
+(defvar myvi-region-p nil
+  "A variable to control the activation of region mode")
+(make-variable-buffer-local 'myvi-region-p)
 
 (defvar myvi-escape-bound nil
   "Buffer-local variable to track whether escape key is bound.")
 (make-variable-buffer-local 'myvi-escape-bound)
+
+(defvar myvi-last-search nil
+  "Last search string.")
+(make-variable-buffer-local 'myvi-last-search)
+
+(defvar myvi-last-match-beg nil
+  "Beginning of last match.")
+(make-variable-buffer-local 'myvi-last-match-beg)
+
+(defvar myvi-last-match-end nil
+  "End of last match.")
+(make-variable-buffer-local 'myvi-last-match-end)
 
 (defun myvi-setup-escape ()
   "Set up escape key binding for the current buffer."

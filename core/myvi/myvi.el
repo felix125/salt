@@ -69,7 +69,7 @@
 (define-key myvi-map "4" #'myvi-key-four)
 
 
-
+(define-key myvi-map "/" #'myvi-key-slash)
 (define-key myvi-map ":" #'myvi-key-colon)
 (define-key myvi-map "$" #'myvi-key-dollar-sign)
 

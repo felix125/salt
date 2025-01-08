@@ -1,4 +1,5 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
+(require 'myvi-core)
 
 (defun myvi-quit-buffer (&optional force)
   "Kill current buffer and switch to *scratch*.
@@ -26,7 +27,7 @@ If FORCE is non-nil, abandon any modifications."
 (defun myvi-read-char ()
   "Wrapper around `read-char`."
   (let ((event (read-event)))
-    (if (characterp event) 
+    (if (characterp event)
         event
       (progn (message "Unknown command")
              nil))))
@@ -45,32 +46,38 @@ If FORCE is non-nil, abandon any modifications."
       (setq num limit))
     (cons num ch)))
 
-(defun myvi-handle-command (type)
-  "Handle vi-like commands for TYPE (d or c)."
+;; deal with c, d or y commands
+(defun myvi-handle-cdy-command (type)
+  "Handle vi-like commands for TYPE (c, d or y)."
   (let* ((first-ch (myvi-read-char))
          (num-and-ch (if (and first-ch (<= ?1 first-ch ?9))
-                        (myvi-read-number first-ch)
-                      (cons 1 first-ch)))
+                         (myvi-read-number first-ch)
+                       (cons 1 first-ch)))
          (num (car num-and-ch))
          (cmd (cdr num-and-ch)))
     (if (null cmd)
-        (message "Unknown command")
+	(progn
+          (message "Unknown command")
+          nil)  ; 回傳 nil 表示失敗
       (cond
        ((char-equal cmd type) (myvi-delete-line num type))
        ((char-equal cmd ?w) (myvi-delete-word num type))
        ((char-equal cmd ?b) (myvi-delete-backward-word num type))
        ((char-equal cmd ?$) (myvi-delete-to-eol type))
        ((char-equal cmd ?0) (myvi-delete-to-bol type))
-       (t (message "Unknown command"))))))
+       ((char-equal cmd ?l) (myvi-delete-char num type 'forward))
+       ((char-equal cmd ?h) (myvi-delete-char num type 'backward))
+       (t (message "Unknown command")
+	  nil)))))
 
 ;; yank
 (defun myvi-yank-region (orig beg end)
   "Yank (copy) the region from BEG to END and restore cursor to ORIG."
   (goto-char beg)
   (push-mark end t t)
-  (sit-for 0.15) 
+  (sit-for 0.15)
   (kill-ring-save beg end)
-  (goto-char orig))        
+  (goto-char orig))
 
 ;; delete/yank N lines
 (defun myvi-delete-line (n type)
@@ -84,7 +91,8 @@ If FORCE is non-nil, abandon any modifications."
         (goto-char beg)
         (kill-line n)
         (when (eq type ?c)
-          (open-line 1))))))
+          (open-line 1))
+	t))))
 
 ;; delete/yank to beginning of line
 (defun myvi-delete-to-bol (type)
@@ -92,8 +100,10 @@ If FORCE is non-nil, abandon any modifications."
   (let ((beg (line-beginning-position))
         (end (point)))
     (if (eq type ?y)
-        (myvi-yank-region end beg end)
-      (kill-region beg end))))
+          (myvi-yank-region end beg end)
+      (progn
+	(kill-region beg end)
+	t))))
 
 ;; delete/yank to end of line
 (defun myvi-delete-to-eol (type)
@@ -102,7 +112,9 @@ If FORCE is non-nil, abandon any modifications."
         (end (line-end-position)))
     (if (eq type ?y)
 	(myvi-yank-region beg beg end)
-      (kill-region beg end))))
+      (progn
+	(kill-region beg end)
+	t))))
 
 ;; delete/yank N words backward
 (defun myvi-delete-backward-word (n type)
@@ -113,7 +125,9 @@ If FORCE is non-nil, abandon any modifications."
                (point))))
     (if (eq type ?y)
         (myvi-yank-region end beg end)
-      (kill-region beg end))))
+      (progn
+	(kill-region beg end)
+	t))))
 
 ;; delete/yank N words forward to their end
 (defun myvi-delete-word (n type)
@@ -123,8 +137,120 @@ If FORCE is non-nil, abandon any modifications."
                (forward-word n)
                (point))))
     (if (eq type ?y)
-          (myvi-yank-region beg beg end)
-      (kill-region beg end))))
+        (myvi-yank-region beg beg end)
+      (progn
+	(kill-region beg end)
+	t))))
+
+;; delete char
+(defun myvi-delete-char (n type direction)
+  "Delete N chars in DIRECTION ('forward or 'backward). Return t if successful, nil if at buffer boundary."
+  (let* ((pos (point))
+         (max-possible (if (eq direction 'forward)
+                           (- (point-max) pos)
+                         (- pos (point-min))))
+         (n (min n max-possible)))
+    (if (= n 0)
+        (progn
+          (message (if (eq direction 'forward)
+                       "End of buffer"
+                     "Beginning of buffer"))
+          nil)
+      (let* ((beg (if (eq direction 'forward)
+                      pos
+                    (- pos n)))
+             (end (if (eq direction 'forward)
+                      (+ pos n)
+                    pos)))
+        (if (eq type ?y)
+            (myvi-yank-region pos beg end)  ; 保持原始位置
+          (kill-region beg end)
+          (when (eq direction 'backward)
+            (goto-char beg)))  ; 往回刪時，游標要移到新位置
+        t))))
+
+
+;; read-pattern
+(defun myvi-read-pattern ()
+  "Read search pattern from minibuffer. If input is empty, use last search pattern."
+  (let ((input (read-from-minibuffer "/")))
+    (cond
+     ;; 輸入為空，且有上次搜尋
+     ((and (string-empty-p input) myvi-last-search)
+      myvi-last-search)
+     ;; 輸入為空，且無上次搜尋
+     ((string-empty-p input)
+      (user-error "No previous search pattern"))
+     ;; 有輸入，使用新輸入
+     (t input))))
+
+
+;; search
+(defun myvi-do-search (pattern reverse)
+  "Perform the actual search. Return matched position or nil if not found."
+  (let ((case-fold-search nil))  ; 設定為 case-sensitive
+    (if reverse
+        (re-search-backward pattern nil t)
+      (re-search-forward pattern nil t))))
+
+(defun myvi-try-wrap-search (pattern reverse)
+  "Try searching from beginning/end after wrap. Return matched position or nil."
+  (let ((case-fold-search nil))  ; 這裡也要設定
+    (message "Search wrapped")
+    (if reverse
+        (progn
+          (goto-char (point-max))
+          (re-search-backward pattern nil t))
+      (progn
+        (goto-char (point-min))
+        (re-search-forward pattern nil t)))))
+
+
+;;
+(defun myvi-update-match-positions ()
+  "Update the match positions after successful search."
+  (setq myvi-last-match-beg (match-beginning 0))
+  (setq myvi-last-match-end (match-end 0)))
+
+;;
+(defun myvi-set-position-for-next-search (reverse)
+  "Set cursor position for the next search based on direction."
+  (if reverse
+      (goto-char myvi-last-match-beg)
+    (goto-char myvi-last-match-end)))
+
+;; myvi-forward-search
+(defun myvi-forward-search (pattern &optional reverse)
+  "Search forward for PATTERN. If REVERSE is non-nil, search backward."
+  (interactive (list (myvi-read-pattern)))
+  (let ((start-pos (point))
+        (found nil))
+    ;; 如果是重複上次搜尋，調整起始位置
+    (when (and myvi-last-search
+               (string= pattern myvi-last-search)
+               myvi-last-match-beg)
+      (myvi-set-position-for-next-search reverse))
+    ;; 保存搜尋字串
+    (setq myvi-last-search pattern)
+    ;; 嘗試第一次搜尋
+    (setq found (myvi-do-search pattern reverse))
+    ;; 如果找不到則嘗試 wrap 搜尋
+    (when (not found)
+      (setq found (myvi-try-wrap-search pattern reverse)))
+    (if found
+        (progn
+          (myvi-update-match-positions)
+          (goto-char myvi-last-match-beg))
+      (goto-char start-pos)
+      (message "Pattern not found: %s" pattern))))
+
+
+(defun myvi-repeat-search (&optional reverse)
+  "Repeat last search. If REVERSE is non-nil, search in opposite direction."
+  (interactive)
+  (if myvi-last-search
+      (myvi-forward-search myvi-last-search reverse)
+    (message "No previous search")))
 
 
 (provide 'myvi-extra)

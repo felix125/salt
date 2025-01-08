@@ -23,8 +23,8 @@
 (defun myvi-key-c ()
   "Placeholder for change/edit command."
   (interactive)
-  (myvi-handle-command ?c)
-  (myvi-disable))
+  (when (myvi-handle-cdy-command ?c)  ; 只有在成功時才執行
+    (myvi-disable)))
 
 ;;; 刪除類 (Delete)
 ;; d: 刪除
@@ -32,7 +32,7 @@
   "Start a delete command sequence"
   (interactive)
   (setq cursor-type '(hbar . 5))
-  (myvi-handle-command ?d)
+  (myvi-handle-cdy-command ?d)
   (setq cursor-type 'box))
 
 ;;; 光標移動類 (Movement)
@@ -111,9 +111,9 @@ Unlike Vi’s insert mode, simply return to normal Emacs editing."
 ;;; 搜尋類 (Search)
 ;; n: 重複上一次搜尋
 (defun myvi-key-n ()
-  "Repeat last search."
+  "Search for next occurrence."
   (interactive)
-  (isearch-repeat-forward))
+  (myvi-repeat-search nil))
 
 ;;; 插入類 (Insert)
 ;; o: 插入新行
@@ -127,9 +127,18 @@ Unlike Vi’s insert mode, simply return to normal Emacs editing."
 ;;; 貼上類 (Paste)
 ;; p: 貼上
 (defun myvi-key-p ()
-  "Paste after cursor."
+  "Paste (put) text after cursor, handling line-wise paste specially."
   (interactive)
-  (yank))
+  (let ((text (car kill-ring)))
+    (if (and text (string-match "\n$" text))
+        (progn
+          (forward-line)
+          (beginning-of-line)
+          (yank)
+	  (forward-line -1))
+      (forward-char)
+      (yank)
+      (backward-char))))
 
 ;;; 巨集/錄製類 (Macro)
 ;; q: [TODO] 巨集錄製
@@ -211,7 +220,7 @@ Unlike Vi’s insert mode, simply return to normal Emacs editing."
   "Copy line or region."
   (interactive)
   (setq cursor-type '(hbar . 5))
-  (myvi-handle-command ?y)
+  (myvi-handle-cdy-command ?y)
   (setq cursor-type 'box))
 
 ;;; 摺疊/捲動類 (Fold/Scroll)
@@ -321,9 +330,10 @@ Unlike Vi’s insert mode, simply return to normal Emacs editing."
 ;;; 搜尋類 (Search)
 ;; N: 反向重複上次搜尋
 (defun myvi-key-N ()
-  "Repeat last search in opposite direction."
+  "Search for previous occurrence."
   (interactive)
-  (isearch-repeat-backward))
+  (myvi-repeat-search t))
+
 
 ;;; 插入類 (Insert)
 ;; O: 在上方插入新行
@@ -653,9 +663,9 @@ Unlike Vi’s insert mode, simply return to normal Emacs editing."
 
 ;; 斜線
 (defun myvi-key-slash ()
-  "Placeholder for slash key."
+  "Search forward like vi's /, with wrap-around and vi-like cursor behavior."
   (interactive)
-  (message "Slash key not implemented"))
+  (myvi-forward-search (myvi-read-pattern)))
 
 ;; 反斜線
 (defun myvi-key-backslash ()
