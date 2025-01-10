@@ -24,7 +24,6 @@
   (setq recentf-max-saved-items 200
         recentf-max-menu-items 15
         recentf-save-file (expand-file-name "recentf" salt-cache-dir))
-  :config
   (recentf-mode 1))
 
 ;; undo
@@ -75,6 +74,11 @@
     (interactive)
     (switch-to-buffer "*scratch*")
     )
+  ;; whitespace
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+  ;;
+  (with-eval-after-load 'debug
+                        (define-key debugger-mode-map (kbd "<escape>") #'keyboard-escape-quit))
   )
 
 (use-package helpful
