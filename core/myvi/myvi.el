@@ -48,15 +48,17 @@
 
 (define-key myvi-map "d" #'myvi-key-d)
 
-
 ;;; 光標移動類 (Movement)
 ;; e: 移動到單字結尾
 (defun myvi-key-e ()
   "Move to end of word."
   (interactive)
-  (forward-word)
-  (backward-word)
-  (forward-word))
+  (if (eobp)
+      (message "End of buff")
+    (progn
+      (forward-char)
+      (myvi-forward-word-end)
+      (backward-char))))
 
 (define-key myvi-map "e" #'myvi-key-e)
 
@@ -170,9 +172,11 @@ Unlike Vi’s insert mode, simply return to normal Emacs editing."
     (if (and text (string-match "\n$" text))
         (progn
           (forward-line)
-          (beginning-of-line)
+	  (if (and (eobp) (not (bolp)))
+	      (newline)
+            (beginning-of-line))
           (yank)
-	  (forward-line -1))
+          (forward-line -1))
       (forward-char)
       (yank)
       (backward-char))))
@@ -254,9 +258,12 @@ Unlike Vi’s insert mode, simply return to normal Emacs editing."
 ;;; 光標移動類 (Movement)
 ;; w: 向前移動一個單字
 (defun myvi-key-w ()
-  "Move forward by word."
+  "Move forward one word.
+Similar to Vim's 'w' command, moves the cursor to the beginning of the next word."
   (interactive)
-  (forward-word))
+  (if (eobp)
+      (message "End of buffer")
+    (myvi-forward-word)))
 
 (define-key myvi-map "w" #'myvi-key-w)
 
@@ -838,6 +845,108 @@ Unlike Vi’s insert mode, simply return to normal Emacs editing."
   "Placeholder for up-arrow key."
   (interactive)
   (message "Right arrow key not implemented"))
+
+;; space
+(defun myvi-key-space ()
+  "Placeholder for SPACE key"
+  (interactive)
+  (myvi-handle-space-command))
+
+(defvar myvi-space-commands
+  '(("Files"
+     (?f "File commands"
+	 ((?? "Show file commands help" nil)
+	  (?f "find-file" find-file)
+	  (?r "consult-recent-file" consult-recent-file))))
+    ("Projects"
+     (?p "Project commands"
+         ((?? "Show project commands help" nil)
+	  (?f "project-find-file" project-find-file)
+          (?b "consult-project-buffer" consult-project-buffer))))
+    ("Search"
+     (?s "Search commands"
+	 ((?? "Show search commands help" nil)
+	  (?s "consult-line" consult-line)
+	  (?i "consult-imenu" consult-imenu)
+	  (?m "consult-line-multi" consult-line-multi))))
+    ("Help"
+     (?? "Show help" myvi-show-space-help))))
+
+(defun myvi-show-space-help ()
+  "Show help for space commands."
+  (interactive)
+  (with-help-window "*Space Commands*"
+    (princ "Space Commands:\n\n")
+    (dolist (group myvi-space-commands)
+      (princ (format "%s:\n" (car group)))
+      (dolist (cmd (cdr group))
+        (if (listp (nth 2 cmd))
+            ;; 如果是巢狀命令，顯示子命令
+            (progn
+              (princ (format "  %c - %s:\n" (nth 0 cmd) (nth 1 cmd)))
+              (dolist (subcmd (nth 2 cmd))
+                (princ (format "    %c - %s\n"
+                             (nth 0 subcmd)
+                             (nth 1 subcmd)))))
+          ;; 一般命令
+          (princ (format "  %c - %s\n" (nth 0 cmd) (nth 1 cmd))))))))
+
+(defun myvi-handle-subcommands (subcommands)
+  "Handle sub-commands after a prefix key."
+  (message "Press ? for help, or press command key")
+  (let* ((cmd (myvi-read-char))
+         (found nil))
+    (when cmd
+      (when (get-buffer-window "*Space Commands*")
+        (quit-windows-on "*Space Commands*"))
+      (if (char-equal cmd ??)
+          (progn
+            (with-help-window "*Space Commands*"
+              (princ "Available sub-commands:\n\n")
+              (dolist (subcmd subcommands)
+                (princ (format "  %c - %s\n"
+                             (nth 0 subcmd)
+                             (nth 1 subcmd)))))
+            (myvi-handle-subcommands subcommands))  ; 繼續等待子命令
+        (dolist (subcmd subcommands)
+          (when (char-equal cmd (nth 0 subcmd))
+            (when (nth 2 subcmd)  ; 確保命令不是 nil（help 命令是 nil）
+              (call-interactively (nth 2 subcmd)))
+            (setq found t)))
+        (unless found
+          (message "Unknown sub-command"))))))
+
+
+(defun myvi-handle-space-command ()
+  "Handle commands that start with SPC."
+  (interactive)
+  (message "Press ? for help, or press command key")
+  (let* ((cmd (myvi-read-char))
+         (found nil))
+    (when cmd
+      (when (get-buffer-window "*Space Commands*")  ; 如果幫助視窗開著就關掉
+        (quit-windows-on "*Space Commands*"))
+      (dolist (group myvi-space-commands)
+        (dolist (cmd-def (cdr group))
+          (when (char-equal cmd (nth 0 cmd-def))
+            (if (char-equal cmd ??)
+                (progn          ; 如果是 ? 命令
+                  (myvi-show-space-help)
+                  (myvi-handle-space-command))  ; 遞迴調用，等待下一個命令
+              (if (listp (nth 2 cmd-def))
+                  (myvi-handle-subcommands (nth 2 cmd-def))
+                (call-interactively (nth 2 cmd-def))))
+            (setq found t))))
+      (unless found
+        (message "Unknown command")))))
+
+
+(define-key myvi-map (kbd "<SPC>") #'myvi-key-space)
+
+;; esc
+
+(define-key myvi-map (kbd "<escape>") #'keyboard-escape-quit)
+(define-key myvi-map (kbd "M-x") #'execute-extended-command)
 
 ;;;###autoload
 (defun myvi-setup ()
