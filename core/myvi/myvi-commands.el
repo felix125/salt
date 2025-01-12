@@ -1,6 +1,25 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 (require 'myvi-core)
 
+;; myvi-forward-word
+(defun myvi-forward-word (&optional num)
+"Move forward to the next word, using dynamically set word characters."
+  (let ((num (or num 1)))
+    (dotimes (_ num)
+      (skip-chars-forward myvi-word-chars)
+      (skip-chars-forward (concat "^" myvi-word-chars)))))
+
+;; myvi-forward-word-end
+(defun myvi-forward-word-end (&optional num)
+  "Move forward to the end of NUM words (default 1).
+Similar to vim's 'e' motion, moves cursor to the end of each word."
+    (let ((num (or num 1)))
+      (dotimes (_ num)
+	(skip-chars-forward (concat "^" myvi-word-chars))
+	(skip-chars-forward myvi-word-chars))))
+
+
+;; colon
 (defun myvi-quit-buffer (&optional force)
   "Kill current buffer and switch to *scratch*.
 If FORCE is non-nil, abandon any modifications."
@@ -27,10 +46,29 @@ If FORCE is non-nil, abandon any modifications."
 (defun myvi-read-char ()
   "Wrapper around `read-char`."
   (let ((event (read-event)))
-    (if (characterp event)
-        event
-      (progn (message "Unknown command")
-             nil))))
+    (cond
+     ;; 一般字符
+     ((characterp event) event)
+     ;; 方向鍵等特殊鍵
+     ((vectorp event)
+      (message "Special key '%s' is not supported" (key-description event))
+      nil)
+     ;; 滑鼠事件
+     ((mouse-event-p event)
+      (message "Mouse events are not supported")
+      nil)
+     ;; 其他情況
+     (t
+      (message "Unknown input: %S" event)
+      nil))))
+
+;; (defun myvi-read-char ()
+;;   "Wrapper around `read-char`."
+;;   (let ((event (read-event)))
+;;     (if (characterp event)
+;;         event
+;;       (progn (message "Unknown command")
+;;              nil))))
 
 ;; deal with the Numeric Arguments
 (defun myvi-read-number (first-digit)
@@ -61,14 +99,14 @@ If FORCE is non-nil, abandon any modifications."
           nil)  ; 回傳 nil 表示失敗
       (cond
        ((char-equal cmd type) (myvi-delete-line num type))
-       ((char-equal cmd ?w) (myvi-delete-word num type))
-       ((char-equal cmd ?b) (myvi-delete-backward-word num type))
-       ((char-equal cmd ?$) (myvi-delete-to-eol type))
-       ((char-equal cmd ?0) (myvi-delete-to-bol type))
-       ((char-equal cmd ?l) (myvi-delete-char num type 'forward))
-       ((char-equal cmd ?h) (myvi-delete-char num type 'backward))
-       (t (message "Unknown command")
-	  nil)))))
+	((char-equal cmd ?w) (myvi-delete-word num type))
+	((char-equal cmd ?b) (myvi-delete-backward-word num type))
+	((char-equal cmd ?$) (myvi-delete-to-eol type))
+	((char-equal cmd ?0) (myvi-delete-to-bol type))
+	((char-equal cmd ?l) (myvi-delete-char num type 'forward))
+	((char-equal cmd ?h) (myvi-delete-char num type 'backward))
+	(t (message "Unknown command")
+	   nil)))))
 
 ;; yank
 (defun myvi-yank-region (orig beg end)
@@ -116,6 +154,7 @@ If FORCE is non-nil, abandon any modifications."
 	(kill-region beg end)
 	t))))
 
+
 ;; delete/yank N words backward
 (defun myvi-delete-backward-word (n type)
   "Delete/yank N words backward based on TYPE."
@@ -134,7 +173,8 @@ If FORCE is non-nil, abandon any modifications."
   "Delete N words forward to their end."
   (let ((beg (point))
         (end (progn
-               (forward-word n)
+	       (message "n is %d" n)
+               (myvi-forward-word-end n)
                (point))))
     (if (eq type ?y)
         (myvi-yank-region beg beg end)

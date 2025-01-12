@@ -853,7 +853,9 @@ Unlike Vi’s insert mode, simply return to normal Emacs editing."
   (myvi-handle-space-command))
 
 (defvar myvi-space-commands
-  '(("Files"
+  '(("General Help"
+     (?? "Show general command guide" myvi-show-space-help))
+    ("Files"
      (?f "File commands"
 	 ((?? "Show file commands help" nil)
 	  (?f "find-file" find-file)
@@ -869,8 +871,12 @@ Unlike Vi’s insert mode, simply return to normal Emacs editing."
 	  (?s "consult-line" consult-line)
 	  (?i "consult-imenu" consult-imenu)
 	  (?m "consult-line-multi" consult-line-multi))))
-    ("Help"
-     (?? "Show help" myvi-show-space-help))))
+    ("Helpful Commands"
+     (?h "Helpful commands"
+	 ((?k "helpful-key" helpful-key)
+	  (?f "helpful-function" helpful-function)
+	  (?v "helpful-variable" helpful-variable)
+	  (?c "helpful-command" helpful-command))))))
 
 (defun myvi-show-space-help ()
   "Show help for space commands."

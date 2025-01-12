@@ -1,33 +1,50 @@
 ;;; -*- coding: utf-8; lexical-binding: t -*-
 ;; myvi-core.el
 
+;;; All variables
 (defvar myvi-map (make-sparse-keymap)
   "Keymap for myvi commands.")
 
-(defvar myvi-active-p nil
+(defvar-local myvi-active-p nil
   "A variable to control the activation of myvi keymap.")
-(make-variable-buffer-local 'myvi-active-p)
 
-(defvar myvi-region-p nil
+(defvar-local myvi-region-p nil
   "A variable to control the activation of region mode")
-(make-variable-buffer-local 'myvi-region-p)
 
-(defvar myvi-escape-bound nil
+(defvar-local myvi-escape-bound nil
   "Buffer-local variable to track whether escape key is bound.")
-(make-variable-buffer-local 'myvi-escape-bound)
 
-(defvar myvi-last-search nil
+(defvar-local myvi-last-search nil
   "Last search string.")
-(make-variable-buffer-local 'myvi-last-search)
 
-(defvar myvi-last-match-beg nil
+(defvar-local myvi-last-match-beg nil
   "Beginning of last match.")
-(make-variable-buffer-local 'myvi-last-match-beg)
 
-(defvar myvi-last-match-end nil
+(defvar-local myvi-last-match-end nil
   "End of last match.")
-(make-variable-buffer-local 'myvi-last-match-end)
 
+(defvar myvi-word-chars-prog
+  "a-zA-Z0-9\x4e00-\x9fff_"  ; 程式碼模式用，包含下劃線但不含撇號
+  "Characters considered part of a word in programming modes.")
+
+(defvar myvi-word-chars-text
+  "a-zA-Z0-9\x4e00-\x9fff'_"
+  "Characters considered part of a word in text modes, including apostrophe.")
+
+(defvar-local myvi-word-chars nil
+  "Buffer-local variable to hold word character definition for myvi-forward-commands.")
+
+(defun myvi-set-word-chars ()
+  "Set `myvi-word-chars` based on the current major mode or user configuration."
+  (setq myvi-word-chars
+	(if (derived-mode-p 'prog-mode 'conf-mode)
+	    myvi-word-chars-prog
+	  myvi-word-chars-text)))
+
+
+
+
+;;; Functions
 (defun myvi-setup-escape ()
   "Set up escape key binding for the current buffer."
   (unless (or myvi-escape-bound
@@ -90,6 +107,7 @@
         (add-to-list 'emulation-mode-map-alists
                      `((myvi-active-p . ,myvi-map)))
         (myvi-setup-escape)
+	(myvi-set-word-chars)
         (myvi-enable))
     (progn
       (setq emulation-mode-map-alists
